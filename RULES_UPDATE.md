@@ -203,3 +203,9 @@ python test_game.py
 **Status:** ✅ **COMPLETE AND TESTED**
 
 All changes have been implemented, tested, and verified to work correctly with both the GUI and console interfaces.
+
+## Recent updates (Nov 13, 2025)
+
+- The GUI now includes a visual `BOARD_SCALE` option; the logical grid remains unscaled and is centered on the scaled background. Rendering and clicks use `grid_origin_x`/`grid_origin_y`.
+- Piece spacing is configurable in `src/gui.py` with `PIECE_OFFSET_X`, `PIECE_OFFSET_Y`, and `PIECE_PADDING`; `PIECE_RADIUS` is derived from `CELL_SIZE`.
+- Use the calibration scripts `calibrate_board.py` and `detect_offset.py` to obtain recommended offsets/scale for your board image.

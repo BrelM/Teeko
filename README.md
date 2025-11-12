@@ -238,4 +238,20 @@ September 2025 - Updated November 2025
 ## License
 
 See LICENSE file for details.
+ 
+## Recent updates (Nov 13, 2025)
+
+- Background image can be scaled via `BOARD_SCALE` in `src/gui.py` (visual only). The logical grid remains unscaled and is centered on the scaled background.
+- Click mapping and piece rendering use the computed `grid_origin_x`/`grid_origin_y` so visuals align with the scaled board.
+- Piece spacing and alignment: use `PIECE_OFFSET_X`, `PIECE_OFFSET_Y`, and `PIECE_PADDING` in `src/gui.py`. `PIECE_RADIUS` is now derived from `CELL_SIZE` so spacing between pieces is easier to tune.
+- Calibration tools: run `calibrate_board.py` (interactive) or `detect_offset.py` (automatic) to determine recommended offsets and scale; copy the printed values into `src/gui.py` (in `GameGUI.__init__`).
+
+Quick commands:
+
+```powershell
+python calibrate_board.py   # interactively tune offsets/scale
+python main.py              # launch GUI
+```
+
+Proposed deletions (please confirm before removal): `BUG_FIX_SUMMARY.md`, `IMPLEMENTATION_SUMMARY.md`.
 

@@ -418,3 +418,9 @@ You now have:
 **Status: COMPLETE** ✅
 
 Questions? Check the documentation files or review the well-commented source code.
+
+## Recent updates (Nov 13, 2025)
+
+- Background image scaling (`BOARD_SCALE`) was introduced; the logical grid is centered on the scaled background and remains unscaled. Rendering and click mapping use `grid_origin_x`/`grid_origin_y`.
+- Piece alignment and spacing are adjustable via `PIECE_OFFSET_X`, `PIECE_OFFSET_Y`, and `PIECE_PADDING` in `src/gui.py`.
+- Use `calibrate_board.py` (interactive) or `detect_offset.py` (automatic) to find recommended values, then copy them into `src/gui.py`.

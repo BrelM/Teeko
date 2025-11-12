@@ -177,3 +177,15 @@ For issues or questions:
 **Enjoy playing Teeko!** 🎮
 
 For console mode, run: `python play_console.py`
+
+## Recent updates (Nov 13, 2025)
+
+- Background scaling: you can tweak `BOARD_SCALE` in `src/gui.py` to change how the background image is displayed. This scales only the visual background; the logical grid is unscaled and will be centered on the background.
+- If pieces look misaligned with the board image, run:
+
+```powershell
+python calibrate_board.py   # interactive tuning
+python detect_offset.py     # automatic detection
+```
+
+Copy the recommended `PIECE_OFFSET_X`, `PIECE_OFFSET_Y`, and `BOARD_SCALE` values into `src/gui.py` when finished.

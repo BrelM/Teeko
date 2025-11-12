@@ -229,3 +229,9 @@ The Teeko game now features a professional graphical user interface using pygame
 **Status**: ✨ **Complete and Ready for Use!**
 
 To launch: `python play.py`
+
+## Recent updates (Nov 13, 2025)
+
+- The GUI now supports a visual `BOARD_SCALE` while keeping the logical grid unscaled; the grid is centered on the scaled background and rendering/click mapping use `grid_origin_x`/`grid_origin_y`.
+- Piece alignment is adjustable via `PIECE_OFFSET_X`, `PIECE_OFFSET_Y`, and `PIECE_PADDING` in `src/gui.py`. `PIECE_RADIUS` is derived from `CELL_SIZE` for easier spacing control.
+- Added calibration tools: `calibrate_board.py` (interactive) and `detect_offset.py` (automatic) to compute recommended offsets and scale values.

@@ -169,3 +169,8 @@ Before each release, verify:
 - Turn switching is O(1) - simple pointer swap
 - Victory detection is O(n) per placement - optimal for 5×5 board
 - No performance issues expected with current implementation
+
+## Recent updates (Nov 13, 2025)
+
+- GUI tests: background scaling (`BOARD_SCALE`) and centered logical grid behavior were added to the manual verification steps. Ensure clicks are mapped relative to `grid_origin_x`/`grid_origin_y` when testing GUI.
+- Calibration scripts (`calibrate_board.py`, `detect_offset.py`) should be used when testing visual alignment across different board images and resolutions.

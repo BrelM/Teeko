@@ -127,3 +127,11 @@ python test_turn_switch.py       # Specific scenario test (now works correctly)
 - The current behavior allows victory detection during placement phase (when pieces form winning patterns)
 - This is intentional and correct per Teeko rules
 - Movement phase victories are also properly detected and handled
+
+## Recent updates (Nov 13, 2025)
+
+- GUI improvements: background scaling (`BOARD_SCALE`) added; logical grid centers on scaled background and uses `grid_origin_x`/`grid_origin_y` for click mapping.
+- Piece alignment: `PIECE_OFFSET_X`, `PIECE_OFFSET_Y`, and `PIECE_PADDING` are available in `src/gui.py`; `PIECE_RADIUS` is derived from `CELL_SIZE`.
+- Calibration tools (`calibrate_board.py`, `detect_offset.py`) added to help detect and set offsets/scale.
+
+If you consider this file redundant with `VERIFICATION_REPORT.md` or `IMPLEMENTATION_SUMMARY.md`, reply and I will remove it.

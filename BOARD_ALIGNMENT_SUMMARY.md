@@ -44,9 +44,6 @@ PIECE_OFFSET_Y = 1   # Vertical offset (pixels)
 ```
 
 These values ensure that:
-- Pieces are drawn 5 pixels to the right of grid center
-- Pieces are drawn 1 pixel down from grid center
-- All pieces align uniformly with the board image
 
 ## How It Works
 
@@ -59,20 +56,12 @@ piece_y = board_offset_y + row * cell_size + cell_size/2 + piece_offset_y
 ```
 
 Where:
-- `board_offset_x = 150` (left edge of board on screen)
-- `board_offset_y = 100` (top edge of board on screen)
-- `cell_size = 80` (each grid cell is 80×80 pixels)
-- `piece_offset_x/y = 5/1` (detected alignment offset)
 
 ### Example Calculations
 
 For piece at board position [0,0]:
-- X = 150 + 0×80 + 40 + 5 = 195
-- Y = 100 + 0×80 + 40 + 1 = 141
 
 For piece at board position [4,4]:
-- X = 150 + 4×80 + 40 + 5 = 515
-- Y = 100 + 4×80 + 40 + 1 = 461
 
 ## Verification
 
@@ -126,11 +115,6 @@ python detect_offset.py
 
 ## Technical Details
 
-- **Board Image**: 557×554 pixels (scales to 400×400)
-- **Scale Factor**: 1.39× (width and height)
-- **Offset Method**: Applied uniformly to all pieces
-- **Click Detection**: Uses original grid (not affected by offset)
-- **Game Logic**: Completely independent of visual offset
 
 ## Benefits
 
@@ -143,14 +127,13 @@ python detect_offset.py
 
 ## Notes
 
-- The offset only affects visual rendering
-- Click detection still uses the underlying grid
-- Game pieces in memory are unaffected
-- Valid moves are correctly positioned
-- Piece selection works normally
 
----
 
 **Status**: ✅ Complete and tested
 **Files Modified**: 1 (src/gui.py)
 **Files Created**: 4 (calibrate_board.py, detect_offset.py, analyze_board.py, BOARD_ALIGNMENT.md)
+## Recent updates (Nov 13, 2025)
+
+- The GUI supports a visual-only `BOARD_SCALE` in `src/gui.py`; the logical grid remains unscaled and is centered on the scaled background image.
+- Pieces are drawn relative to `grid_origin_x`/`grid_origin_y` and can be fine-tuned with `PIECE_OFFSET_X`, `PIECE_OFFSET_Y`, and `PIECE_PADDING` (now used to derive `PIECE_RADIUS`).
+- Use `calibrate_board.py` (interactive) or `detect_offset.py` (automatic) to detect recommended offsets and scale, then copy values into `src/gui.py`.

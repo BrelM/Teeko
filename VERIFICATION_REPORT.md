@@ -153,3 +153,8 @@ The game now:
 - ✅ Ends the game immediately upon victory
 - ✅ Prevents further moves after game end
 - ✅ Displays appropriate victory messages
+
+## Recent updates (Nov 13, 2025)
+
+- Verification notes: ensure GUI tests check background scaling (`BOARD_SCALE`) visual behavior and that click mapping uses the centered `grid_origin_x`/`grid_origin_y`.
+- Use `calibrate_board.py` and `detect_offset.py` during verification to ensure piece alignment across different board images and scales.

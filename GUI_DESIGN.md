@@ -232,3 +232,9 @@ This visual design provides:
 ✅ Professional appearance
 ✅ Good accessibility
 ✅ Smooth performance
+
+## Recent updates (Nov 13, 2025)
+
+- The GUI supports a scaled background (`BOARD_SCALE`) while keeping the logical grid unscaled; the logical grid is centered on the scaled background and all clicks are mapped relative to `grid_origin_x`/`grid_origin_y`.
+- Pieces use `PIECE_OFFSET_X`, `PIECE_OFFSET_Y`, and `PIECE_PADDING` for fine alignment; `PIECE_RADIUS` is derived from `CELL_SIZE`.
+- See `calibrate_board.py` and `detect_offset.py` for calibration utilities to find offsets and scale.
