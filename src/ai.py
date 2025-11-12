@@ -103,7 +103,7 @@ class TeekoBoard:
         return None
     
     def _has_four_in_a_row(self, player):
-        """Check if player has four pieces in a row"""
+        """Check if player has four pieces in a row or in a square"""
         # Horizontal check
         for row in range(self.BOARD_SIZE):
             for col in range(self.BOARD_SIZE - 3):
@@ -126,6 +126,15 @@ class TeekoBoard:
         for row in range(self.BOARD_SIZE - 3):
             for col in range(3, self.BOARD_SIZE):
                 if all(self.board[row + i][col - i] == player for i in range(4)):
+                    return True
+        
+        # Square check (2x2 squares)
+        for row in range(self.BOARD_SIZE - 1):
+            for col in range(self.BOARD_SIZE - 1):
+                if (self.board[row][col] == player and
+                    self.board[row][col + 1] == player and
+                    self.board[row + 1][col] == player and
+                    self.board[row + 1][col + 1] == player):
                     return True
         
         return False

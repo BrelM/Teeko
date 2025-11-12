@@ -15,5 +15,6 @@ from .ai import TeekoBoard
 from .player import Player
 from .control import GameController
 from .start import GameUI
+from .gui import GameGUI, launch_gui
 
-__all__ = ['TeekoBoard', 'Player', 'GameController', 'GameUI']
+__all__ = ['TeekoBoard', 'Player', 'GameController', 'GameUI', 'GameGUI', 'launch_gui']
