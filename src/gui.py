@@ -182,11 +182,17 @@ class GameGUI:
         
         if success:
             self.play_sound('move')
-            self.show_message(f"✓ Piece placed!")
             
+            # Check for winner first
+            if self.controller.is_game_over():
+                self.game_over = True
+                self.play_sound('trumpet')
+                self.show_message(message, 5000)
             # Check if entering movement phase
-            if self.controller.board.get_phase() == "movement":
+            elif self.controller.board.get_phase() == "movement":
                 self.show_message("All pieces placed! Movement phase begins.")
+            else:
+                self.show_message(f"✓ {message}")
         else:
             self.show_message(f"✗ {message}", 2000)
     
@@ -212,10 +218,9 @@ class GameGUI:
                 
                 # Check for winner
                 if self.controller.is_game_over():
-                    winner = self.controller.get_winner()
                     self.game_over = True
                     self.play_sound('trumpet')
-                    self.show_message(f"🎉 {winner.name} wins! Press R to restart.", 5000)
+                    self.show_message(f"{message} Press R to restart.", 5000)
             else:
                 self.show_message(f"✗ {message}", 2000)
             

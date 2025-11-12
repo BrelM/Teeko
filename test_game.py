@@ -72,3 +72,104 @@ def test_game_logic():
 if __name__ == "__main__":
     test_game_logic()
 
+
+def test_square_win():
+    """Test square shape winning condition"""
+    print("\n\n3. SQUARE SHAPE WIN TEST")
+    print("="*50)
+    
+    p1 = Player("Alice", 1)
+    p2 = Player("Bob", 2)
+    controller = GameController(p1, p2)
+    
+    print("\nPlacing pieces in a 2x2 square formation for Player 1:")
+    print("Expected: Alice should win by forming a square at (0,0), (0,1), (1,0), (1,1)")
+    
+    # Create a square for player 1
+    controller.place_piece(0, 0)  # Player 1
+    print(f"  Alice placed at (0,0)")
+    
+    controller.place_piece(2, 2)  # Player 2
+    print(f"  Bob placed at (2,2)")
+    
+    controller.place_piece(0, 1)  # Player 1
+    print(f"  Alice placed at (0,1)")
+    
+    controller.place_piece(2, 3)  # Player 2
+    print(f"  Bob placed at (2,3)")
+    
+    controller.place_piece(1, 0)  # Player 1
+    print(f"  Alice placed at (1,0)")
+    
+    controller.place_piece(3, 2)  # Player 2
+    print(f"  Bob placed at (3,2)")
+    
+    success, msg = controller.place_piece(1, 1)  # Player 1 - completes square!
+    print(f"  Alice placed at (1,1)")
+    print(f"  Result: {msg}")
+    
+    if controller.is_game_over():
+        winner = controller.get_winner()
+        print(f"\n✓ {winner.name} won by forming a square!")
+    else:
+        print(f"\n✗ Square win not detected!")
+    
+    print(controller.get_board_display())
+
+def test_placement_phase_win():
+    """Test winning at end of placement phase"""
+    print("\n\n4. PLACEMENT PHASE WIN TEST")
+    print("="*50)
+    
+    p1 = Player("Alice", 1)
+    p2 = Player("Bob", 2)
+    controller = GameController(p1, p2)
+    
+    print("\nCreating a scenario where placement phase ends with a winner:")
+    
+    # Create pieces in a line for player 1
+    controller.place_piece(0, 0)  # Player 1
+    print(f"  Alice placed at (0,0)")
+    
+    controller.place_piece(2, 2)  # Player 2
+    print(f"  Bob placed at (2,2)")
+    
+    controller.place_piece(0, 1)  # Player 1
+    print(f"  Alice placed at (0,1)")
+    
+    controller.place_piece(2, 3)  # Player 2
+    print(f"  Bob placed at (2,3)")
+    
+    controller.place_piece(0, 2)  # Player 1
+    print(f"  Alice placed at (0,2)")
+    
+    controller.place_piece(3, 2)  # Player 2
+    print(f"  Bob placed at (3,2)")
+    
+    success, msg = controller.place_piece(0, 3)  # Player 1 - completes line!
+    print(f"  Alice placed at (0,3)")
+    print(f"  Result: {msg}")
+    
+    if controller.is_game_over():
+        winner = controller.get_winner()
+        print(f"\n✓ {winner.name} won at the end of placement phase!")
+    else:
+        print(f"\nNow placing Bob's last piece...")
+        success, msg = controller.place_piece(4, 4)  # Player 2
+        print(f"  Bob placed at (4,4)")
+        print(f"  Result: {msg}")
+        
+        if controller.is_game_over():
+            print(f"\n✓ Winner was detected at placement end!")
+        else:
+            print(f"\n✗ No winner detected (but this scenario might not trigger with this board)")
+    
+    print(controller.get_board_display())
+
+if __name__ == "__main__":
+    test_game_logic()
+    test_square_win()
+    test_placement_phase_win()
+    print("\n" + "="*50)
+    print("✓ All tests completed!")
+    print("="*50)

@@ -51,17 +51,23 @@ class GameController:
         success, message = self.board.place_piece(row, col, self.current_player.player_id)
         
         if success:
-            # Check if all pieces are placed
-            if self.board.get_phase() == "movement":
-                print(f"\n✓ All pieces placed! Entering movement phase.")
-            
-            # Check for winner
+            # Always check for winner after placement
             winner = self.board.check_winner()
             if winner:
                 self.game_over = True
                 self.winner = self.player1 if winner == self.player1.player_id else self.player2
-                return True, f"Winner: {self.winner.name}!"
+                
+                # Different message depending on phase
+                if self.board.get_phase() == "movement":
+                    return True, f"🎉 {self.winner.name} wins with a winning configuration at placement!"
+                else:
+                    return True, f"🎉 {self.winner.name} wins at placement phase!"
             
+            # Check if all pieces are placed and transitioning to movement phase
+            if self.board.get_phase() == "movement":
+                print(f"\n✓ All pieces placed! Entering movement phase.")
+            
+            # Switch turn after successful placement (and no winner found)
             self.switch_turn()
         
         return success, message
