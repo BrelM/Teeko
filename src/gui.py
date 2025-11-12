@@ -60,9 +60,19 @@ class GameGUI:
         self.WINDOW_HEIGHT = 700
         self.BOARD_SIZE = 5
         self.CELL_SIZE = 80
-        self.PIECE_RADIUS = 30
-        self.BOARD_OFFSET_X = 150
+        # Space/padding between a piece and the cell edge; controls visual "space between pieces"
+        self.PIECE_PADDING = 9
+        # Piece radius derived from cell size and padding so it's easy to tune spacing
+        self.PIECE_RADIUS = self.CELL_SIZE // 2 - self.PIECE_PADDING
+        self.BOARD_OFFSET_X = 100
         self.BOARD_OFFSET_Y = 100
+        
+        # Board image alignment offsets (adjust these to match board image)
+        # These are applied when drawing pieces and calculating valid moves
+        self.PIECE_OFFSET_X = 5  # Horizontal offset for pieces relative to grid
+        self.PIECE_OFFSET_Y = 5  # Vertical offset for pieces relative to grid
+        # Background image scale (only background image is scaled)
+        self.BOARD_SCALE = 1.3
         
         # Create window
         self.screen = pygame.display.set_mode((self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
@@ -97,14 +107,12 @@ class GameGUI:
         self.font_small = pygame.font.Font(None, 24)
         self.font_tiny = pygame.font.Font(None, 16)
         
-        # Try to load board background
+        # Try to load board background (do not scale here; scaling happens at draw time)
         board_path = resource_path / "images" / "board.jpg"
         if board_path.exists():
             try:
-                self.board_image = pygame.image.load(str(board_path))
-                self.board_image = pygame.transform.scale(self.board_image, 
-                    (self.BOARD_SIZE * self.CELL_SIZE, self.BOARD_SIZE * self.CELL_SIZE))
-            except:
+                self.board_image = pygame.image.load(str(board_path)).convert()
+            except Exception:
                 self.board_image = None
         else:
             self.board_image = None
@@ -162,8 +170,11 @@ class GameGUI:
             return
         
         x, y = pos
-        col = (x - self.BOARD_OFFSET_X) // self.CELL_SIZE
-        row = (y - self.BOARD_OFFSET_Y) // self.CELL_SIZE
+        # Map click to logical grid using current grid origin (may be centered on background)
+        grid_x = getattr(self, 'grid_origin_x', self.BOARD_OFFSET_X)
+        grid_y = getattr(self, 'grid_origin_y', self.BOARD_OFFSET_Y)
+        col = (x - grid_x) // self.CELL_SIZE
+        row = (y - grid_y) // self.CELL_SIZE
         
         # Check if click is within board
         if not (0 <= row < self.BOARD_SIZE and 0 <= col < self.BOARD_SIZE):
@@ -286,64 +297,83 @@ class GameGUI:
         """Draw the game board"""
         board_x = self.BOARD_OFFSET_X
         board_y = self.BOARD_OFFSET_Y
-        board_width = self.BOARD_SIZE * self.CELL_SIZE
-        board_height = self.BOARD_SIZE * self.CELL_SIZE
+        # Logical board size (grid & interaction use this, unscaled)
+        logical_board_width = self.BOARD_SIZE * self.CELL_SIZE
+        logical_board_height = self.BOARD_SIZE * self.CELL_SIZE
+        # Scaled background image size (visual only)
+        scaled_board_width = int(self.BOARD_SIZE * self.CELL_SIZE * self.BOARD_SCALE)
+        scaled_board_height = int(self.BOARD_SIZE * self.CELL_SIZE * self.BOARD_SCALE)
         
-        # Draw background
+        # Draw background (scaled image only)
         if self.board_image:
-            self.screen.blit(self.board_image, (board_x, board_y))
+            try:
+                scaled_img = pygame.transform.scale(self.board_image, (scaled_board_width, scaled_board_height))
+                self.screen.blit(scaled_img, (board_x, board_y))
+            except Exception:
+                pygame.draw.rect(self.screen, Colors.BOARD_BG,
+                                 (board_x, board_y, scaled_board_width, scaled_board_height))
         else:
-            pygame.draw.rect(self.screen, Colors.BOARD_BG, 
-                           (board_x, board_y, board_width, board_height))
-        
-        # Draw grid
+            pygame.draw.rect(self.screen, Colors.BOARD_BG,
+                             (board_x, board_y, scaled_board_width, scaled_board_height))
+        # Compute grid origin so logical grid is centered on the scaled background image
+        grid_origin_x = board_x + (scaled_board_width - logical_board_width) // 2
+        grid_origin_y = board_y + (scaled_board_height - logical_board_height) // 2
+
+        # Store for click mapping
+        self.grid_origin_x = grid_origin_x
+        self.grid_origin_y = grid_origin_y
+
+        # Draw logical grid (unscaled) on top so pieces and clicks align with logical cells
         for row in range(self.BOARD_SIZE + 1):
-            y = board_y + row * self.CELL_SIZE
-            pygame.draw.line(self.screen, Colors.BLACK, 
-                           (board_x, y), (board_x + board_width, y), 2)
-        
-        for col in range(self.BOARD_SIZE + 1):
-            x = board_x + col * self.CELL_SIZE
+            y = grid_origin_y + row * self.CELL_SIZE
             pygame.draw.line(self.screen, Colors.BLACK,
-                           (x, board_y), (x, board_y + board_height), 2)
+                             (grid_origin_x, y), (grid_origin_x + logical_board_width, y), 2)
+
+        for col in range(self.BOARD_SIZE + 1):
+            x = grid_origin_x + col * self.CELL_SIZE
+            pygame.draw.line(self.screen, Colors.BLACK,
+                             (x, grid_origin_y), (x, grid_origin_y + logical_board_height), 2)
         
-        # Draw coordinates
+        # Draw coordinates (based on logical grid)
         for i in range(self.BOARD_SIZE):
             # Row numbers
             text = self.font_tiny.render(str(i), True, Colors.WHITE)
-            self.screen.blit(text, (board_x - 30, board_y + i * self.CELL_SIZE + 30))
-            
+            self.screen.blit(text, (grid_origin_x - 30, grid_origin_y + i * self.CELL_SIZE + 30))
+
             # Column numbers
             text = self.font_tiny.render(str(i), True, Colors.WHITE)
-            self.screen.blit(text, (board_x + i * self.CELL_SIZE + 30, board_y - 25))
+            self.screen.blit(text, (grid_origin_x + i * self.CELL_SIZE + 30, grid_origin_y - 25))
     
     def draw_pieces(self):
         """Draw game pieces"""
         board_state = self.controller.board.get_board_state()
-        
+        # Use grid origin (centered on scaled background) for rendering
+        grid_x = getattr(self, 'grid_origin_x', self.BOARD_OFFSET_X)
+        grid_y = getattr(self, 'grid_origin_y', self.BOARD_OFFSET_Y)
+
         for row in range(self.BOARD_SIZE):
             for col in range(self.BOARD_SIZE):
                 if board_state[row][col] != 0:
-                    x = self.BOARD_OFFSET_X + col * self.CELL_SIZE + self.CELL_SIZE // 2
-                    y = self.BOARD_OFFSET_Y + row * self.CELL_SIZE + self.CELL_SIZE // 2
-                    
+                    x = grid_x + col * self.CELL_SIZE + self.CELL_SIZE // 2 + self.PIECE_OFFSET_X
+                    y = grid_y + row * self.CELL_SIZE + self.CELL_SIZE // 2 + self.PIECE_OFFSET_Y
+
                     # Determine color
                     player_id = board_state[row][col]
                     color = Colors.LIGHT_RED if player_id == 1 else Colors.LIGHT_BLUE
-                    
+
                     # Draw piece
                     pygame.draw.circle(self.screen, color, (x, y), self.PIECE_RADIUS)
                     pygame.draw.circle(self.screen, Colors.BLACK, (x, y), self.PIECE_RADIUS, 3)
-                    
+
                     # Draw highlight if selected
                     if self.selected_piece == (row, col):
-                        pygame.draw.circle(self.screen, Colors.HIGHLIGHT, (x, y), 
+                        pygame.draw.circle(self.screen, Colors.HIGHLIGHT, (x, y),
                                          self.PIECE_RADIUS + 5, 3)
-        
+
         # Draw valid moves
         for row, col in self.valid_moves:
-            x = self.BOARD_OFFSET_X + col * self.CELL_SIZE + self.CELL_SIZE // 2
-            y = self.BOARD_OFFSET_Y + row * self.CELL_SIZE + self.CELL_SIZE // 2
+            x = grid_x + col * self.CELL_SIZE + self.CELL_SIZE // 2 + self.PIECE_OFFSET_X
+            y = grid_y + row * self.CELL_SIZE + self.CELL_SIZE // 2 + self.PIECE_OFFSET_Y
             pygame.draw.circle(self.screen, Colors.GREEN, (x, y), 10)
             pygame.draw.circle(self.screen, Colors.BLACK, (x, y), 10, 2)
     
@@ -355,7 +385,11 @@ class GameGUI:
         self.screen.blit(title, title_rect)
         
         # Draw info panel
-        info_x = self.BOARD_OFFSET_X + self.BOARD_SIZE * self.CELL_SIZE + 40
+        # Position the info panel to the right of the larger of the scaled background
+        # or the logical grid to avoid overlap when background is enlarged/reduced.
+        logical_w = self.BOARD_SIZE * self.CELL_SIZE
+        scaled_w = int(self.BOARD_SIZE * self.CELL_SIZE * getattr(self, 'BOARD_SCALE', 1.0))
+        info_x = self.BOARD_OFFSET_X + max(logical_w, scaled_w) + 40
         info_y = self.BOARD_OFFSET_Y
         
         # Current player
