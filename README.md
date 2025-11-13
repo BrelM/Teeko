@@ -209,7 +209,7 @@ This tests:
 - **Phases**: 
   1. Placement (place 4 pieces alternately)
   2. Movement (move pieces to adjacent squares)
-- **Winning**: First to get 4 pieces in a row (horizontal, vertical, or diagonal)
+- **Winning**: First to get 4 pieces in a row (horizontal, vertical, or diagonal) or to form a square
 
 ## Assets Used
 
