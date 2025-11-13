@@ -110,6 +110,9 @@ class GameGUI:
         self.message = ""
         self.message_time = 0
         self.game_over = False
+        # Delay before AI responds to human move (milliseconds)
+        self.ai_response_delay_ms = 1500
+        self.ai_response_delay_until = 0  # timestamp when AI can respond
         
     def load_resources(self):
         """Load images, fonts, and sounds"""
@@ -222,8 +225,12 @@ class GameGUI:
             # Check if entering movement phase
             elif self.controller.board.get_phase() == "movement":
                 self.show_message("All pieces placed! Movement phase begins.")
+                # After phase transition, set delay before AI responds
+                self.ai_response_delay_until = pygame.time.get_ticks() + self.ai_response_delay_ms
             else:
                 self.show_message(f"✓ {message}")
+                # After human move, set delay before AI responds
+                self.ai_response_delay_until = pygame.time.get_ticks() + self.ai_response_delay_ms
         else:
             self.show_message(f"✗ {message}", 2000)
     
@@ -252,6 +259,9 @@ class GameGUI:
                     self.game_over = True
                     self.play_sound('trumpet')
                     self.show_message(f"{message} Press R to restart.", 5000)
+                else:
+                    # After human move, set delay before AI responds
+                    self.ai_response_delay_until = pygame.time.get_ticks() + self.ai_response_delay_ms
             else:
                 self.show_message(f"✗ {message}", 2000)
             
@@ -513,8 +523,12 @@ class GameGUI:
             try:
                 current = self.controller.get_current_player()
                 if current.is_ai and not self.controller.is_game_over():
-                    # Only attempt if prolog AI wrapper available
-                    if PROLOG_AI_AVAILABLE and compute_best_move:
+                    # Check if enough time has passed since last human move
+                    current_time = pygame.time.get_ticks()
+                    if current_time < self.ai_response_delay_until:
+                        # Still waiting; don't compute move yet
+                        pass
+                    elif PROLOG_AI_AVAILABLE and compute_best_move:
                         board_flat = self.controller.board.get_board_flat()
                         move, score = compute_best_move(board_flat, current.player_id, depth=current.ai_depth, timeout=current.ai_timeout)
                         if move is not None:
@@ -547,8 +561,8 @@ class GameGUI:
                                         self.show_message(f"AI moved from ({fr_r},{fr_c}) to ({to_r},{to_c})")
                                 else:
                                     self.show_message(f"AI failed to move: {message}")
-                            # small delay to allow user to see AI action
-                            pygame.time.delay(300)
+                            # delay to allow user to see AI action
+                            pygame.time.delay(1000)
                         else:
                             print(f"AI returned no move (move={move}, score={score})")
                     else:

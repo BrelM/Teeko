@@ -135,7 +135,12 @@ evaluate(Board, Player, Score) :-
     Opp is 3 - Player, include(=(Opp), Board, L2), length(L2, N2),
     % center control
     nth0(12, Board, CV), (CV =:= Player -> CPlayer = 1 ; CPlayer = 0), (CV =:= Opp -> COpp = 1 ; COpp = 0),
-    Score is (N1 - N2) + 2*(CPlayer - COpp).
+    % base score: piece difference + center control bonus
+    BaseScore is (N1 - N2) + 2*(CPlayer - COpp),
+    % add small random noise (0-3 points) for variation in placement strategies
+    random(0, 1, R),
+    Noise is truncate(R * 3),
+    Score is BaseScore + Noise.
 
 % index/rc helpers
 index_rc(Index, Row, Col) :- Row is Index // 5, Col is Index mod 5.
