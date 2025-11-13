@@ -107,19 +107,19 @@ class TeekoBoard:
         # Horizontal check
         for row in range(self.BOARD_SIZE):
             for col in range(self.BOARD_SIZE - 3):
-                if all(self.board[row][col + i] == player for i in range(4)):
+                if all(self.board[row][col + i] == player for i in range(self.PIECES_PER_PLAYER)):
                     return True
         
         # Vertical check
         for col in range(self.BOARD_SIZE):
             for row in range(self.BOARD_SIZE - 3):
-                if all(self.board[row + i][col] == player for i in range(4)):
+                if all(self.board[row + i][col] == player for i in range(self.PIECES_PER_PLAYER)):
                     return True
         
         # Diagonal check (top-left to bottom-right)
         for row in range(self.BOARD_SIZE - 3):
             for col in range(self.BOARD_SIZE - 3):
-                if all(self.board[row + i][col + i] == player for i in range(4)):
+                if all(self.board[row + i][col + i] == player for i in range(self.PIECES_PER_PLAYER)):
                     return True
         
         # Diagonal check (top-right to bottom-left)
@@ -150,3 +150,18 @@ class TeekoBoard:
     def get_pieces_placed(self, player):
         """Return number of pieces placed by player"""
         return self.pieces_placed[player]
+
+    # Helper conversions for AI / Prolog integration
+    def get_board_flat(self):
+        """Return the board as a flat list of integers (row-major)"""
+        return [self.board[r][c] for r in range(self.BOARD_SIZE) for c in range(self.BOARD_SIZE)]
+
+    def rc_to_index(self, row, col):
+        """Convert row,col to flat index (0..24)"""
+        return row * self.BOARD_SIZE + col
+
+    def index_to_rc(self, index):
+        """Convert flat index to (row, col)"""
+        row = index // self.BOARD_SIZE
+        col = index % self.BOARD_SIZE
+        return row, col

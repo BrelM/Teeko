@@ -26,6 +26,14 @@ except ImportError:
 
 from .control import GameController
 from .player import Player
+# Prolog AI wrapper
+try:
+    from .prolog_ai import compute_best_move
+    PROLOG_AI_AVAILABLE = True
+except Exception as e:
+    print(f"Warning: Prolog AI not available: {e}")
+    compute_best_move = None
+    PROLOG_AI_AVAILABLE = False
 
 class Colors:
     """Color constants"""
@@ -47,7 +55,8 @@ class Colors:
 class GameGUI:
     """Pygame-based GUI for Teeko game"""
     
-    def __init__(self, player1_name="Player 1", player2_name="Player 2"):
+    def __init__(self, player1_name="Player 1", player2_name="Player 2",
+                 ai_player1=False, ai_player2=False, ai_depth=3, ai_timeout=2.0):
         """Initialize the pygame GUI"""
         if not PYGAME_AVAILABLE:
             raise RuntimeError("pygame is required for GUI mode. Install it with: pip install pygame")
@@ -84,10 +93,15 @@ class GameGUI:
         # Load resources
         self.load_resources()
         
-        # Create game controller
-        from .player import Player
-        p1 = Player(player1_name, 1, is_ai=False)
-        p2 = Player(player2_name, 2, is_ai=False)
+        # Store AI config
+        self.ai_player1 = bool(ai_player1)
+        self.ai_player2 = bool(ai_player2)
+        self.ai_depth = int(ai_depth)
+        self.ai_timeout = float(ai_timeout)
+
+        # Create game controller with Player objects (respecting AI flags)
+        p1 = Player(player1_name, 1, is_ai=self.ai_player1, ai_depth=self.ai_depth, ai_timeout=self.ai_timeout)
+        p2 = Player(player2_name, 2, is_ai=self.ai_player2, ai_depth=self.ai_depth, ai_timeout=self.ai_timeout)
         self.controller = GameController(p1, p2)
         
         # Game state
@@ -163,6 +177,12 @@ class GameGUI:
                     self.running = False
                 elif event.key == pygame.K_r:  # R for reset/restart
                     self.reset_game()
+                elif event.key == pygame.K_a:
+                    # Toggle AI for current player
+                    self.toggle_ai_for_current_player()
+                elif event.key == pygame.K_d:
+                    # Toggle AI-vs-AI demo mode (both players AI)
+                    self.toggle_demo_mode()
     
     def handle_click(self, pos):
         """Handle mouse click"""
@@ -265,13 +285,36 @@ class GameGUI:
     def reset_game(self):
         """Reset the game"""
         from .player import Player
-        p1 = Player(self.controller.player1.name, 1, is_ai=False)
-        p2 = Player(self.controller.player2.name, 2, is_ai=False)
+        # Recreate players preserving AI flags and parameters
+        p1 = Player(self.controller.player1.name, 1, is_ai=self.ai_player1, ai_depth=self.ai_depth, ai_timeout=self.ai_timeout)
+        p2 = Player(self.controller.player2.name, 2, is_ai=self.ai_player2, ai_depth=self.ai_depth, ai_timeout=self.ai_timeout)
         self.controller = GameController(p1, p2)
         self.selected_piece = None
         self.valid_moves = []
         self.game_over = False
         self.show_message("Game reset!")
+
+    def toggle_ai_for_current_player(self):
+        """Toggle AI flag for the current player"""
+        current = self.controller.get_current_player()
+        # flip the flag both in controller and saved GUI config
+        current.is_ai = not current.is_ai
+        if current.player_id == 1:
+            self.ai_player1 = current.is_ai
+        else:
+            self.ai_player2 = current.is_ai
+        self.show_message(f"AI for {current.name} set to {current.is_ai}")
+
+    def toggle_demo_mode(self):
+        """Toggle AI-vs-AI demo mode (both players AI)."""
+        both_ai = not (self.ai_player1 and self.ai_player2)
+        self.ai_player1 = both_ai
+        self.ai_player2 = both_ai
+        # Update controller player objects
+        self.controller.player1.is_ai = both_ai
+        self.controller.player2.is_ai = both_ai
+        mode = "ON" if both_ai else "OFF"
+        self.show_message(f"AI-vs-AI demo mode: {mode}")
     
     def draw(self):
         """Draw the game"""
@@ -401,6 +444,11 @@ class GameGUI:
         
         player_text = self.font_medium.render(current_player.name, True, player_color)
         self.screen.blit(player_text, (info_x, info_y + 40))
+
+        # AI status
+        ai_status = f"AI: {'ON' if current_player.is_ai else 'OFF'}"
+        ai_text = self.font_small.render(ai_status, True, Colors.WHITE)
+        self.screen.blit(ai_text, (info_x, info_y + 80))
         
         # Phase
         phase = self.controller.board.get_phase()
@@ -425,7 +473,11 @@ class GameGUI:
             "then click square to move.",
             "",
             "Press R to restart",
-            "Press ESC to quit"
+            "Press ESC to quit",
+            "",
+            "Hotkeys:",
+            "A = Toggle AI for current player",
+            "D = Toggle AI-vs-AI demo mode"
         ]
         
         instr_y = info_y + 200
@@ -456,6 +508,60 @@ class GameGUI:
         """Main game loop"""
         while self.running:
             self.handle_events()
+
+            # If current player is AI and game not over, compute and perform AI move
+            try:
+                current = self.controller.get_current_player()
+                if current.is_ai and not self.controller.is_game_over():
+                    # Only attempt if prolog AI wrapper available
+                    if PROLOG_AI_AVAILABLE and compute_best_move:
+                        board_flat = self.controller.board.get_board_flat()
+                        move, score = compute_best_move(board_flat, current.player_id, depth=current.ai_depth, timeout=current.ai_timeout)
+                        if move is not None:
+                            # Placement or movement
+                            if isinstance(move, int):
+                                r, c = self.controller.board.index_to_rc(move)
+                                success, message = self.controller.place_piece(r, c)
+                                if success:
+                                    self.play_sound('move')
+                                    if self.controller.is_game_over():
+                                        self.game_over = True
+                                        self.play_sound('trumpet')
+                                        self.show_message(message, 5000)
+                                    else:
+                                        self.show_message(f"AI placed at ({r},{c})")
+                                else:
+                                    self.show_message(f"AI failed to place: {message}")
+                            elif isinstance(move, tuple) and len(move) == 2:
+                                fr, to = move
+                                fr_r, fr_c = self.controller.board.index_to_rc(fr)
+                                to_r, to_c = self.controller.board.index_to_rc(to)
+                                success, message = self.controller.move_piece(fr_r, fr_c, to_r, to_c)
+                                if success:
+                                    self.play_sound('move')
+                                    if self.controller.is_game_over():
+                                        self.game_over = True
+                                        self.play_sound('trumpet')
+                                        self.show_message(message, 5000)
+                                    else:
+                                        self.show_message(f"AI moved from ({fr_r},{fr_c}) to ({to_r},{to_c})")
+                                else:
+                                    self.show_message(f"AI failed to move: {message}")
+                            # small delay to allow user to see AI action
+                            pygame.time.delay(300)
+                        else:
+                            print(f"AI returned no move (move={move}, score={score})")
+                    else:
+                        if not PROLOG_AI_AVAILABLE:
+                            print(f"Warning: Prolog AI not available (PROLOG_AI_AVAILABLE={PROLOG_AI_AVAILABLE})")
+                        if not compute_best_move:
+                            print(f"Warning: compute_best_move is None")
+            except Exception as e:
+                # If AI errors, print and continue (prevents crash)
+                print(f"Error during AI move: {e}")
+                import traceback
+                traceback.print_exc()
+
             self.draw()
             self.clock.tick(self.fps)
         
@@ -463,7 +569,7 @@ class GameGUI:
         sys.exit()
 
 
-def launch_gui(player1_name="Player 1", player2_name="Player 2"):
+def launch_gui(player1_name="Player 1", player2_name="Player 2", ai_player1=False, ai_player2=False, ai_depth=3, ai_timeout=2.0):
     """Launch the pygame GUI"""
     if not PYGAME_AVAILABLE:
         print("\nError: pygame is not installed!")
@@ -474,5 +580,5 @@ def launch_gui(player1_name="Player 1", player2_name="Player 2"):
         game = GameUI()
         game.start()
     else:
-        gui = GameGUI(player1_name, player2_name)
+        gui = GameGUI(player1_name, player2_name, ai_player1=ai_player1, ai_player2=ai_player2, ai_depth=ai_depth, ai_timeout=ai_timeout)
         gui.run()

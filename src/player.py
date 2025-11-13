@@ -15,7 +15,7 @@
 class Player:
     """Represents a player in the Teeko game"""
     
-    def __init__(self, name, player_id, is_ai=False):
+    def __init__(self, name, player_id, is_ai=False, ai_depth=3, ai_timeout=2.0):
         """
         Initialize a player
         
@@ -27,6 +27,9 @@ class Player:
         self.name = name
         self.player_id = player_id
         self.is_ai = is_ai
+        # AI tuning parameters (used only if is_ai=True)
+        self.ai_depth = ai_depth
+        self.ai_timeout = ai_timeout
         self.symbol = "●" if player_id == 1 else "○"
         self.color = "Red" if player_id == 1 else "Blue"
     
