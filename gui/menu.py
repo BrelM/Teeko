@@ -120,10 +120,16 @@ class Menu:
                 return {"exit": True}
             # Back button
             if self.back_button.collidepoint(event.pos):
-                if self.current_screen != "mode":
+                if self.current_screen != "difficulty":
+                    if self.mode_index != 0:
+                        self.current_screen = "difficulty"
+                        self.player1_name = ""
+                        self.player2_name = ""
+                    else:
+                        self.current_screen = "mode"
+                else:
                     self.current_screen = "mode"
-                    self.player1_name = ""
-                    self.player2_name = ""
+                    
                 return None
             
             # Mode selection screen
@@ -132,7 +138,7 @@ class Menu:
                     if btn.rect.collidepoint(event.pos):
                         self.mode_index = i
                         self.mode = self.modes[i]
-                        self.current_screen = "difficulty"
+                        self.current_screen = "difficulty" if i != 0 else "names"
                         self.diff_index = 1  # Reset to medium
                         return None
             
