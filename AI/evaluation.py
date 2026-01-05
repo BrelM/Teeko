@@ -75,18 +75,17 @@ class Evaluation:
         for p in player_pos:
             for nb in neighbors(p):
                 if nb in player_pos:
-                    group_bonus += 12   # bonus plus fort qu’avant
+                    group_bonus += 12   
         score += group_bonus
 
         group_penalty = 0
         for o in opp_pos:
             for nb in neighbors(o):
                 if nb in opp_pos:
-                    group_penalty += 10  # défense (un peu moins fort)
+                    group_penalty += 10 
         score -= group_penalty
 
         # --- 3) ALIGNEMENTS / PATTERNS (attaque + défense) ---
-        # Très important pour Teeko
         for pattern in self.winning_patterns:
             pcount = sum(1 for pos in pattern if pos in player_pos)
             ocount = sum(1 for pos in pattern if pos in opp_pos)
@@ -106,10 +105,10 @@ class Evaluation:
             if ocount == 2 and empty == 2:
                 score -= 45
 
-        # --- 4) THREATS (ta fonction existante, on l'utilise !) ---
+        # --- 4) THREATS 
         score += self.score_threats(state, player)
 
-        # --- 5) MOBILITY (faible mais utile en phase shift) ---
+        # --- 5) MOBILITY 
         if len(player_pos) == 4:
             my_moves = len(self.m.get_legal_moves(state, player))
             op_moves = len(self.m.get_legal_moves(state, opponent))
