@@ -1,7 +1,7 @@
 import pygame
 import config
 from gui.pieces import Piece
-from PrologRules.prolog_manager import PrologManager
+from prologRules.prolog_manager import PrologManager
 
 class Board:
     def __init__(self, surface):

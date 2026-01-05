@@ -7,7 +7,7 @@ if project_root not in sys.path:
     sys.path.append(project_root)
 
 from pyswip import Prolog, Functor, Variable, Query, Atom
-from PrologRules.ia_helper import move_to_python,python_list_to_prolog
+from prologRules.ia_helper import move_to_python,python_list_to_prolog
 
 class PrologManager:
     def __init__(self, prolog_file="teeko_rules.pl"):

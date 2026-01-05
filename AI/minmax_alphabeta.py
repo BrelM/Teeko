@@ -1,7 +1,7 @@
 # AI/minmax_alphabeta.py
 import time
 import random
-from PrologRules.ia_helper import switch_player
+from prologRules.ia_helper import switch_player
 
 INF = 10**9
 

@@ -1,4 +1,4 @@
-from PrologRules.ia_helper import switch_player
+from prologRules.ia_helper import switch_player
 
 class MinMax:
     def __init__(self, manager, evaluator, max_depth=2):

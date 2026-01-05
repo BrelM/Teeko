@@ -9,11 +9,11 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if project_root not in sys.path:
     sys.path.append(project_root)
 
-from PrologRules.prolog_manager import PrologManager
-from PrologRules.ia_helper import python_to_move_tuple
-from AI.evaluation import Evaluation
+from prologRules.prolog_manager import PrologManager
+from prologRules.ia_helper import python_to_move_tuple
+from ai.evaluation import Evaluation
 
-from AI.minmax_alphabeta import MinMaxAlphaBeta
+from ai.minmax_alphabeta import MinMaxAlphaBeta
 
 class AIEngine:
     def __init__(self, prolog_file="teeko_rules.pl", difficulty=None, mode=None):

@@ -19,7 +19,7 @@ Score global = somme pondérée :
 
 """
 
-from PrologRules.ia_helper import switch_player
+from prologRules.ia_helper import switch_player
 
 class Evaluation:
     def __init__(self, manager):

@@ -3,7 +3,7 @@ import config
 from games.board import Board
 from gui.banner import Banner
 from gui.sounds import play_sound
-from AI.ai_engine import AIEngine
+from ai.ai_engine import AIEngine
 
 class Game:
     def __init__(self, surface, mode, difficulty, player1_name, player2_name):
