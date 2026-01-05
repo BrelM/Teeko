@@ -1,5 +1,5 @@
 import pygame
-import config
+import src.gui.config as config
 
 class MenuButton:
     """Reusable button class for menu items"""

@@ -195,31 +195,32 @@ pip install pyswip
 ```
 Teeko/
 ├── main.py              # Start here!
-├── config.py            # Game settings (editable for customization)
 ├── requirements.txt     # Dependencies
 ├── IMPROVEMENTS.md      # Detailed improvements documentation
-├── games/
-│   ├── game.py         # Game logic and flow
-│   └── board.py        # Board representation
-├── gui/
-│   ├── menu.py         # Menu system (improved!)
-│   ├── banner.py       # Status display
-│   └── pieces.py       # Piece rendering
-├── AI/
-│   ├── ai_engine.py    # Central AI coordinator
-│   ├── evaluation.py    # Evaluation function
-│   ├── minmax_alphabeta.py  # Alpha-Beta search
-│   └── minmax.py       # MinMax algorithm
-└── PrologRules/
-    ├── prolog_manager.py  # Prolog interface
-    ├── ia_helper.py      # AI helpers
-    └── teeko_rules.pl    # Game rules (Prolog)
+├── src/
+│   ├── controller/
+│   │   ├── game.py         # Game logic and flow
+│   │   └── board.py        # Board representation
+│   ├── gui/
+│   │   ├── menu.py         # Menu system (improved!)
+│   │   ├── banner.py       # Status display
+│   │   └── pieces.py       # Piece rendering
+│   └── model/
+│       ├── ai/
+│       │   ├── ai_engine.py    # Central AI coordinator
+│       │   ├── evaluation.py   # Evaluation function
+│       │   ├── minmax_alphabeta.py  # Alpha-Beta search
+│       │   └── minmax.py       # MinMax algorithm
+│       └── prologRules/
+│           ├── prolog_manager.py  # Prolog interface
+│           ├── ia_helper.py      # AI helpers
+│           └── teeko_rules.pl    # Game rules (Prolog)
 ```
 
 ## Customization
 
 ### Changing Colors/Appearance
-Edit `config.py`:
+Edit `src/gui/config.py`:
 ```python
 # Change button colors
 BUTTON_NORMAL = (80, 80, 120)
@@ -235,7 +236,7 @@ POINT_RADIUS = 10
 ```
 
 ### Adjusting AI Difficulty
-Edit `AI/ai_engine.py` `get_difficulty_params()` method to add custom levels
+Edit `src/model/ai/ai_engine.py` `get_difficulty_params()` method to add custom levels
 
 ## Game Rules Reference
 

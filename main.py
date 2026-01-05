@@ -1,7 +1,7 @@
 import pygame
-import config
-from games.game import Game
-from gui.menu import Menu
+import src.gui.config as config
+from src.controller.game import Game
+from src.gui.menu import Menu
 
 
 def main():

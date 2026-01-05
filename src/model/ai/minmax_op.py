@@ -1,4 +1,4 @@
-from from django.utils.translation import pgettext_lazyrologRules.ia_helper import switch_player
+from prologRules.ia_helper import switch_player
 
 class MinMaxOp:
     def __init__(self, manager, evaluator, engine, max_depth=2):

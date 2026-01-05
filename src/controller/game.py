@@ -1,9 +1,9 @@
 import pygame
-import config
-from games.board import Board
-from gui.banner import Banner
-from gui.sounds import play_sound
-from ai.ai_engine import AIEngine
+import src.gui.config as config
+from src.controller.board import Board
+from src.gui.banner import Banner
+from src.gui.sounds import play_sound
+from src.model.ai.ai_engine import AIEngine
 
 class Game:
     def __init__(self, surface, mode, difficulty, player1_name, player2_name):

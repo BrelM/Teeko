@@ -1,5 +1,5 @@
 import pygame
-import config
+import src.gui.config as config
 
 class Banner:
     def __init__(self, surface, p1, p2):

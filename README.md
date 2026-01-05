@@ -59,31 +59,27 @@ Consultez **[QUICKSTART.md](QUICKSTART.md)**
 ```
 Teeko/
 ├── main.py                    # Point d'entrée (démarrer ici!)
-├── config.py                  # Configuration centralisée
 ├── requirements.txt           # Dépendances Python
 ├── QUICKSTART.md             # Guide utilisateur
-├── IMPROVEMENTS.md           # Détails techniques
-├── ENHANCEMENT_SUMMARY.md    # Résumé des améliorations
 │
-├── games/
-│   ├── game.py              # Orchestration du jeu
-│   └── board.py             # Représentation du plateau
-│
-├── gui/
-│   ├── menu.py              # Système de menu amélioré
-│   ├── banner.py            # Affichage du statut
-│   └── pieces.py            # Rendu des pièces
-│
-├── AI/
-│   ├── ai_engine.py         # Coordinateur IA central
-│   ├── evaluation.py        # Fonction d'évaluation
-│   ├── minmax_alphabeta.py  # Recherche Alpha-Beta
-│   └── minmax.py            # Algorithme MinMax
-│
-└── PrologRules/
-    ├── prolog_manager.py    # Interface Prolog
-    ├── ia_helper.py         # Utilitaires IA
-    └── teeko_rules.pl       # Règles du jeu (Prolog)
+├── src/
+│   ├── controller/
+│   │   ├── game.py          # Orchestration du jeu
+│   │   └── board.py         # Représentation du plateau
+│   ├── gui/
+│   │   ├── menu.py          # Système de menu amélioré
+│   │   ├── banner.py        # Affichage du statut
+│   │   └── pieces.py        # Rendu des pièces
+│   └── model/
+│       ├── ai/
+│       │   ├── ai_engine.py         # Coordinateur IA central
+│       │   ├── evaluation.py        # Fonction d'évaluation
+│       │   ├── minmax_alphabeta.py  # Recherche Alpha-Beta
+│       │   └── minmax.py            # Algorithme MinMax
+│       └── prologRules/
+│           ├── prolog_manager.py    # Interface Prolog
+│           ├── ia_helper.py         # Utilitaires IA
+│           └── teeko_rules.pl       # Règles du jeu (Prolog)
 ```
 
 ## 🎯 Utilisation
@@ -242,7 +238,7 @@ pip install pyswip
 ## 🚀 Utilisation Avancée
 
 ### Personnaliser les Couleurs
-Éditez `config.py`:
+Éditez `src/gui/config.py`:
 ```python
 BUTTON_NORMAL = (80, 80, 120)
 BUTTON_HOVER = (100, 100, 150)
@@ -250,10 +246,10 @@ BUTTON_ACTIVE = (120, 180, 100)
 ```
 
 ### Ajouter des Niveaux de Difficulté
-Modifiez `AI/ai_engine.py` méthode `get_difficulty_params()`
+Modifiez `src/model/ai/ai_engine.py` méthode `get_difficulty_params()`
 
 ### Ajuster les Paramètres IA
-Voir `PrologRules/prolog_manager.py` et `AI/minmax_alphabeta.py`
+Voir `src/model/prologRules/prolog_manager.py` et `src/model/ai/minmax_alphabeta.py`
 
 ## 📊 Comparaison Avant/Après
 

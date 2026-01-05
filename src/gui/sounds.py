@@ -5,7 +5,7 @@ Handles loading and playing audio effects.
 
 import pygame
 import os
-import config
+import src.gui.config as config
 
 
 class SoundManager:
