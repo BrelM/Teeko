@@ -99,7 +99,7 @@ ENABLE_SOUND = True
 
 # Assets paths
 from pathlib import Path
-RESOURCE_PATH = Path(__file__).parent / "assets"
+RESOURCE_PATH = Path(__file__).parent.parent.parent / "assets"
 
 # Sound file paths (relative to project root)
 SOUND_PATHS = {
@@ -115,10 +115,11 @@ SOUND_PATHS = {
 AI_DEFAULT_DIFFICULTY = "medium"  # options: 'easy', 'medium', 'hard'
 # Mapping difficulty levels to search depths
 AI_SEARCH_DEPTHS = {
-	"easy": 1,
-	"medium": 2,
-	"hard": 3
+	"easy": 3,
+	"medium": 4,
+	"hard": 5
 }
+
 # Time delay (ms) for AI "thinking" simulation
 AI_THINKING_DELAY = 800  # milliseconds
 # Time delay (ms) before showing victory/defeat message

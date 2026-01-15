@@ -14,7 +14,7 @@ class PrologManager:
         self.prolog = Prolog()
         print(f"[PrologManager] Chargement de {prolog_file} ...")
 
-        path = os.path.join("PrologRules", "teeko_rules.pl")
+        path = os.path.join("src/model/prologRules", "teeko_rules.pl")
         self.prolog.consult(path)
         
         print("[PrologManager] OK")
